@@ -4,8 +4,15 @@ window.Vue = require('vue');
 
 import Vue from 'vue'
 
+//for auto scroll
 import VueChatScroll from 'vue-chat-scroll'
 Vue.use(VueChatScroll);
+
+//for notifications
+import Toaster from 'v-toaster'
+Vue.use(Toaster, {timeout: 5000});
+    // You need a specific loader for CSS files like https://github.com/webpack/css-loader
+import 'v-toaster/dist/v-toaster.css'
 
 Vue.component('message-component', require('./components/MessageComponent').default);
 
@@ -20,7 +27,8 @@ const app = new Vue({
             time:[]
 
         },
-        typing:''
+        typing:'',
+        numberOfUsers: 0
     },
     methods: {
         send(){
@@ -34,11 +42,11 @@ const app = new Vue({
                     message: this.message
                 })
                     .then(response => {
-                        console.log(response);
+                        //console.log(response);
                         this.message = '';
                     })
                     .catch(error => {
-                        console.log(error);
+                        console.log('Error: '+error);
                     });
             }
         },
@@ -69,6 +77,19 @@ const app = new Vue({
                 }else{
                     this.typing = ''
                 }
+            });
+        Echo.join(`chat`)
+            .here((users) => {
+                this.numberOfUsers = users.length;
+            })
+            .joining((user) => {
+                this.numberOfUsers += 1;
+                this.$toaster.success(user.name+' is joined the chat room');
+
+            })
+            .leaving((user) => {
+                this.numberOfUsers -= 1;
+                this.$toaster.warning(user.name+' is leaved the chat room');
             });
     }
 });
