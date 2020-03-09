@@ -13,8 +13,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                    <a href="{{route('chat')}}">Chat</a>
                 </div>
             </div>
         </div>
