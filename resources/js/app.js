@@ -89,7 +89,6 @@ const app = new Vue({
         }
     },
     mounted(){
-        this.getOldMessages();
         Echo.private('chat')
             .listen('ChatEvent', (e) => {
                 this.chat.message.push(e.message);
@@ -114,6 +113,7 @@ const app = new Vue({
         Echo.join(`chat`)
             .here((users) => {
                 this.numberOfUsers = users.length;
+                this.getOldMessages();
             })
             .joining((user) => {
                 this.numberOfUsers += 1;
